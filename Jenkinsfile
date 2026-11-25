@@ -28,22 +28,26 @@ pipeline {
                 sh 'npm run test:ci'
             }
         }
-
+      
         stage('SonarQube Analysis') {
             steps {
-                withCredentials([
-                    string(
-                        credentialsId: 'sonarqube-token',
-                        variable: 'SONAR_TOKEN'
-                    )
-                ]) {
-                    sh '''
-                        sonar-scanner \
-                          -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-                          -Dsonar.host.url=http://10.0.2.15:9000 \
-                          -Dsonar.token=$SONAR_TOKEN \
-                          -Dsonar.javascript.lcov.reportPaths=coverage/**/lcov.info
-                    '''
+                script {
+                    def scannerHome = tool 'SonarScanner'
+        
+                    withCredentials([
+                        string(
+                            credentialsId: 'Sonar_token',
+                            variable: 'SONAR_TOKEN'
+                        )
+                    ]) {
+                        withEnv(["PATH+SONAR=${scannerHome}/bin"]) {
+                            sh '''
+                                sonar-scanner \
+                                  -Dsonar.host.url=http://10.0.2.15:9000 \
+                                  -Dsonar.token="$SONAR_TOKEN"
+                            '''
+                        }
+                    }
                 }
             }
         }

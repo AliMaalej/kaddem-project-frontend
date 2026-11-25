@@ -1,0 +1,13 @@
+services:
+  frontend:
+    image: alimaalej/kaddem-frontend:latest
+    container_name: angular_frontend
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    networks:
+      - kaddem_network
+
+networks:
+  kaddem_network:
+    driver: bridge
